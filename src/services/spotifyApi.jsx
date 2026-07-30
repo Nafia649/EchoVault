@@ -173,12 +173,18 @@ export function mapSpotifyAlbumDetails(album) {
 /* ─── API Service Fetchers ──────────────────────────────────────────────── */
 
 /**
- * Fetches matching album list from Spotify search endpoint
+ * Fetches matching album list from Spotify search endpoint.
+ *
+ * @param {string}      query  - Search term
+ * @param {AbortSignal} [signal] - Optional AbortSignal to cancel the request
  */
-export async function searchSpotifyAlbums(query) {
+export async function searchSpotifyAlbums(query, signal) {
   if (!query || !query.trim()) return [];
 
-  const response = await fetch(`/api/spotify/search?q=${encodeURIComponent(query.trim())}`);
+  const response = await fetch(
+    `/api/spotify/search?q=${encodeURIComponent(query.trim())}`,
+    { signal },
+  );
   
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}));
