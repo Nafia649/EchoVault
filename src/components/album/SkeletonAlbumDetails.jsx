@@ -81,8 +81,8 @@ export default function SkeletonAlbumDetails() {
             <div className="flex flex-wrap gap-2 mt-3">
               {/* Favorite button — rounded-full px-4 py-1.5 text-xs */}
               <div className="h-7 w-36 rounded-full bg-neutral-700" />
-              {/* Spotify button — same sizing, lower opacity */}
-              <div className="h-7 w-36 rounded-full bg-neutral-700/50" />
+              {/* Last.fm button — same sizing, lower opacity */}
+              <div className="h-7 w-32 rounded-full bg-neutral-700/30" />
             </div>
           </div>
         </div>

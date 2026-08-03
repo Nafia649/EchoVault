@@ -1,14 +1,16 @@
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaSpotify, FaPlay, FaPlus, FaEllipsisH, FaChevronLeft } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaPlay, FaPlus, FaEllipsisH, FaChevronLeft } from 'react-icons/fa';
 
-import { allAlbums, getMockTracks } from '@/data/mockAlbums';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
-import './PagePlaceholder.css';
+import SkeletonAlbumDetails from '@/components/album/SkeletonAlbumDetails';
+import ErrorMessage from '@/components/ErrorMessage';
 import { useFavorites } from '../context/FavoritesContext';
+import { getAlbum } from '@/services/lastfmApi';
+import './PagePlaceholder.css';
 
-/* ─── Footer ────────────────────────────────────────────────────────────── */
-
+/* ─── Track Row ─────────────────────────────────────────────────────────── */
 
 function TrackRow({ track }) {
   return (
@@ -47,13 +49,95 @@ function TrackRow({ track }) {
   );
 }
 
+/* ─── AlbumDetails Page ─────────────────────────────────────────────────── */
+
 export default function AlbumDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
 
-  const album = allAlbums.find((a) => a.id === id);
+  const [album, setAlbum]       = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError]       = useState(null);
 
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    // Abort any previous in-flight request before starting a new one.
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setAlbum(null);
+    setError(null);
+    setIsLoading(true);
+
+    getAlbum(id, controller.signal)
+      .then((data) => {
+        setAlbum(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return; // navigated away — ignore silently
+        setError(err.message || 'Failed to load album. Please try again.');
+        setIsLoading(false);
+      });
+
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [id]);
+
+  /* ── Loading state ── */
+  if (isLoading) {
+    return (
+      <div className="page-placeholder">
+        <div className="max-w-5xl mx-auto px-4 pb-10">
+          <div className="flex items-center justify-between py-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition"
+            >
+              <FaChevronLeft className="h-3 w-3" />
+              <span>Album Page</span>
+            </button>
+          </div>
+          <div className="flex gap-5 items-start">
+            <div className="flex-1 min-w-0">
+              <SkeletonAlbumDetails />
+            </div>
+            <Sidebar />
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  /* ── Error state ── */
+  if (error) {
+    return (
+      <div className="page-placeholder">
+        <div className="max-w-5xl mx-auto px-4 pb-10">
+          <div className="flex items-center justify-between py-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition"
+            >
+              <FaChevronLeft className="h-3 w-3" />
+              <span>Album Page</span>
+            </button>
+          </div>
+          <ErrorMessage message={error} />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  /* ── Album not found (null after load) ── */
   if (!album) {
     return (
       <div className="page-placeholder min-h-[80vh] flex flex-col items-center justify-center gap-4 text-center px-6">
@@ -70,8 +154,8 @@ export default function AlbumDetails() {
     );
   }
 
+  /* ── Loaded album ── */
   const favorited = isFavorite(album.id);
-  const tracks = getMockTracks(album);
 
   return (
     <div className="page-placeholder">
@@ -93,9 +177,20 @@ export default function AlbumDetails() {
               className={`relative rounded-2xl overflow-hidden bg-gradient-to-br ${album.color} p-6`}
               style={{ minHeight: '220px' }}
             >
-              <div className="flex gap-5 items-start">
-                <div className="w-28 h-28 rounded-xl bg-black/30 shrink-0 overflow-hidden flex items-center justify-center text-4xl select-none shadow-lg">
-                  🎤
+              <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+              <div className="relative flex gap-5 items-start">
+                <div className="w-28 h-28 rounded-xl bg-black/30 shrink-0 overflow-hidden shadow-lg">
+                  {album.image ? (
+                    <img
+                      src={album.image}
+                      alt={`${album.title} cover`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-4xl select-none">
+                      🎤
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 pt-1">
@@ -120,19 +215,22 @@ export default function AlbumDetails() {
                       {favorited ? 'Remove Favorite' : 'Add to Favorites'}
                     </button>
 
-                    <button
-                      disabled
-                      className="flex items-center gap-1.5 rounded-full bg-white/10 text-white/50 text-xs font-semibold px-4 py-1.5 cursor-not-allowed"
-                    >
-                      <FaSpotify className="h-3 w-3" />
-                      Open on Spotify
-                    </button>
+                    {album.link && (
+                      <a
+                        href={album.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-4 py-1.5 backdrop-blur-sm transition"
+                      >
+                        Open on Last.fm
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="mt-6">
-                <p className="text-white/50 text-[10px] uppercase tracking-widest">Album</p>
+                <p className="text-white text-[10px] uppercase tracking-widest">Album</p>
                 <h1 className="text-white font-extrabold text-3xl leading-tight drop-shadow-md">
                   {album.title}
                 </h1>
@@ -144,7 +242,7 @@ export default function AlbumDetails() {
                 Tracks
               </h3>
               <ul className="flex flex-col gap-0.5">
-                {tracks.map((track) => (
+                {album.tracks.map((track) => (
                   <TrackRow key={track.id} track={track} />
                 ))}
               </ul>

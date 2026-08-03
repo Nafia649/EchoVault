@@ -15,16 +15,30 @@ const FavoritesContext = createContext(null);
 
 export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState(loadFavorites);
+  const [newFavoritesCount, setNewFavoritesCount] = useState(0);
 
   const toggleFavorite = useCallback((album) => {
+    const exists = favorites.some((a) => a.id === album.id);
+
+    if (!exists) {
+      setNewFavoritesCount(c => c + 1);
+    }
+
     setFavorites((prev) => {
-      const exists = prev.some((a) => a.id === album.id);
-      const next = exists
-        ? prev.filter((a) => a.id !== album.id)
-        : [...prev, album];
+      const currentExists = prev.some((a) => a.id === album.id);
+      let next;
+      if (currentExists) {
+        next = prev.filter((a) => a.id !== album.id);
+      } else {
+        next = [...prev, album];
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
+  }, [favorites]);
+
+  const clearNewFavorites = useCallback(() => {
+    setNewFavoritesCount(0);
   }, []);
 
   const isFavorite = useCallback(
@@ -33,7 +47,13 @@ export function FavoritesProvider({ children }) {
   );
 
   return (
-    <FavoritesContext.Provider value={{ favorites, toggleFavorite, isFavorite }}>
+    <FavoritesContext.Provider value={{
+      favorites,
+      toggleFavorite,
+      isFavorite,
+      newFavoritesCount,
+      clearNewFavorites
+    }}>
       {children}
     </FavoritesContext.Provider>
   );

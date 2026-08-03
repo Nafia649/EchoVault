@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PiWaveSineBold } from 'react-icons/pi';
 import { FaHeart } from 'react-icons/fa';
 import { BsMoonStarsFill } from 'react-icons/bs';
 import { IoChevronDown } from 'react-icons/io5';
+import logo from '@/assets/logo_main.svg';
 
 import { useFavorites } from '@/context/FavoritesContext';
 import './Navbar.css';
 
 function Navbar() {
   const [isDark, setIsDark] = useState(true);
-  const { favorites } = useFavorites();
-  const count = favorites.length;
+  const { newFavoritesCount } = useFavorites();
+  const count = newFavoritesCount;
 
   return (
     <nav className="navbar">
       <div className="navbar__left">
         <Link to="/" className="navbar__logo-link" aria-label="EchoVault home">
           <span className="navbar__logo-icon">
-            <PiWaveSineBold aria-hidden="true" />
+            <img src={logo} alt="EchoVault logo" className="navbar__logo" />
           </span>
         </Link>
       </div>

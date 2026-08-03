@@ -1,3 +1,4 @@
+import { useState, useEffect, useMemo } from 'react';
 import { useFavorites } from '@/context/FavoritesContext';
 import AlbumGrid from '@/components/album/AlbumGrid/AlbumGrid';
 import Sidebar from '@/components/Sidebar/Sidebar';
@@ -7,7 +8,9 @@ function Footer() {
   return (
     <footer className="mt-10 border-t border-neutral-800 py-6 px-6 flex justify-between items-center text-xs tracking-widest text-neutral-400 uppercase">
       <span className="hover:text-white transition cursor-pointer">GitHub</span>
-      <span>Powered By SpotifyAPI</span>
+      <a href="https://last.fm" target="_blank" rel="noreferrer" className="hover:text-white transition">
+        Powered by Last.fm ↗
+      </a>
       <span className="hover:text-white transition cursor-pointer">LinkedIn</span>
     </footer>
   );
@@ -26,7 +29,43 @@ function EmptyState() {
 }
 
 export default function Favorites() {
-  const { favorites } = useFavorites();
+  const { favorites, isFavorite, clearNewFavorites } = useFavorites();
+
+  useEffect(() => {
+    clearNewFavorites();
+  }, [clearNewFavorites]);
+
+  const [filterOption, setFilterOption] = useState('All Albums');
+  const [sortOption, setSortOption]     = useState('Alphabetical (A–Z)');
+
+  const displayAlbums = useMemo(() => {
+    let result = [...favorites];
+
+    if (filterOption === 'Favorites') {
+      result = result.filter(a => isFavorite(a.id));
+    } else if (filterOption === 'Has Album Cover') {
+      result = result.filter(a => !!a.image);
+    } else if (filterOption === 'Has Last.fm Link') {
+      result = result.filter(a => !!a.link || !!a.url);
+    }
+
+    result.sort((a, b) => {
+      if (sortOption === 'Alphabetical (A–Z)') return a.title.localeCompare(b.title);
+      if (sortOption === 'Alphabetical (Z–A)') return b.title.localeCompare(a.title);
+      if (sortOption === 'Artist (A–Z)')       return a.artist.localeCompare(b.artist);
+      if (sortOption === 'Artist (Z–A)')       return b.artist.localeCompare(a.artist);
+      if (sortOption === 'Newest Release')     return (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
+      if (sortOption === 'Oldest Release')     return (parseInt(a.year, 10) || 9999) - (parseInt(b.year, 10) || 9999);
+      return 0;
+    });
+
+    return result;
+  }, [favorites, filterOption, sortOption, isFavorite]);
+
+  function handleClearFilters() {
+    setFilterOption('All Albums');
+    setSortOption('Alphabetical (A–Z)');
+  }
 
   return (
     <div className="page-placeholder">
@@ -55,15 +94,21 @@ export default function Favorites() {
               </h2>
               {favorites.length > 0 && (
                 <span className="text-sm text-neutral-400">
-                  {favorites.length} {favorites.length === 1 ? 'Album' : 'Albums'}
+                  Showing {displayAlbums.length} {displayAlbums.length === 1 ? 'album' : 'albums'}
                 </span>
               )}
             </div>
 
-            {favorites.length === 0 ? <EmptyState /> : <AlbumGrid albums={favorites} />}
+            {displayAlbums.length === 0 ? <EmptyState isFiltered={favorites.length > 0 && displayAlbums.length === 0} onClearFilters={handleClearFilters} /> : <AlbumGrid albums={displayAlbums} />}
           </div>
 
-          <Sidebar />
+          <Sidebar
+            filterOption={filterOption}
+            sortOption={sortOption}
+            onFilterChange={setFilterOption}
+            onSortChange={setSortOption}
+            onClearFilters={handleClearFilters}
+          />
         </div>
       </div>
 

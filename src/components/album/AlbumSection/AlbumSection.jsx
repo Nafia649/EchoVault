@@ -1,21 +1,21 @@
 import AlbumGrid from '../AlbumGrid/AlbumGrid';
 import EmptyState from './EmptyState';
 
-function AlbumSection({ albums = [], searchQuery = '', page, setPage, totalPages, totalAlbums }) {
+function AlbumSection({ title, albums = [], searchQuery = '', page, setPage, totalPages, totalAlbums, onClearFilters }) {
   const isSearching = searchQuery.trim().length > 0;
-  const title = isSearching ? 'Search Results' : 'Featured Albums';
+  const displayTitle = title || (isSearching ? 'Search Results' : 'Featured Albums');
+  const isFilteredEmpty = totalAlbums > 0 && albums.length === 0;
 
   return (
-    <section className="bg-black px-4 py-10 sm:px-6 sm:py-12 md:px-10">
-      <div className="mx-auto max-w-6xl">
+    <section className="">
+      <div className="mx-auto w-full">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-mono text-lg font-bold uppercase tracking-widest text-white sm:text-xl">
-              {title}
+              {displayTitle}
             </h2>
             <p className="mt-1 text-sm text-neutral-400">
-              Showing {albums.length} of {totalAlbums}{' '}
-              {totalAlbums === 1 ? 'album' : 'albums'}
+              Showing {totalAlbums} {totalAlbums === 1 ? 'album' : 'albums'}
             </p>
           </div>
 
@@ -47,7 +47,7 @@ function AlbumSection({ albums = [], searchQuery = '', page, setPage, totalPages
         </div>
 
         {albums.length === 0 ? (
-          <EmptyState />
+          <EmptyState isFiltered={isFilteredEmpty} onClearFilters={onClearFilters} />
         ) : (
           <AlbumGrid albums={albums} />
         )}

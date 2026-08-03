@@ -6,7 +6,7 @@ function AlbumCard({ album, onPlay }) {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(album.id);
-
+  
   return (
     <li>
       <div
@@ -37,7 +37,7 @@ function AlbumCard({ album, onPlay }) {
           type="button"
           aria-label={favorited ? `Remove ${album.title} from favorites` : `Add ${album.title} to favorites`}
           onClick={(e) => { e.stopPropagation(); toggleFavorite(album); }}
-          className={`absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full
+          className={`absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full
                       shadow-md transition-all duration-200 ease-out
                       ${favorited
                         ? 'opacity-100 bg-black/50 text-rose-500 scale-100'
@@ -45,28 +45,28 @@ function AlbumCard({ album, onPlay }) {
                       hover:scale-110`}
         >
           {favorited
-            ? <FaHeart className="h-3.5 w-3.5" aria-hidden="true" />
-            : <FaRegHeart className="h-3.5 w-3.5" aria-hidden="true" />}
+            ? <FaHeart className="h-4 w-4" aria-hidden="true" />
+            : <FaRegHeart className="h-4 w-4" aria-hidden="true" />}
         </button>
 
         <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-2 p-3">
           <div className="min-w-0 translate-y-1 transition-transform duration-300 ease-out group-hover:translate-y-0">
-            <p className="truncate text-sm font-bold text-white leading-tight">{album.title}</p>
-            <p className="truncate text-xs text-white/70">{album.artist}</p>
+            <p className="truncate text-base font-bold text-white leading-tight">{album.title}</p>
+            <p className="truncate text-sm text-white/70">{album.artist}</p>
           </div>
 
           <button
             type="button"
             aria-label={`Play ${album.title} by ${album.artist}`}
             onClick={(e) => { e.stopPropagation(); onPlay?.(album); }}
-            className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full
+            className="shrink-0 flex h-11 w-11 items-center justify-center rounded-full
                        bg-emerald-500 text-black shadow-lg
                        opacity-0 translate-y-3
                        transition-all duration-300 ease-out
                        group-hover:opacity-100 group-hover:translate-y-0
                        hover:scale-110 hover:bg-emerald-400"
           >
-            <FaPlay className="h-3.5 w-3.5 ml-0.5" aria-hidden="true" />
+            <FaPlay className="h-4 w-4 ml-0.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -75,11 +75,13 @@ function AlbumCard({ album, onPlay }) {
 }
 
 function AlbumGrid({ albums, onPlay }) {
+  console.log("AlbumGrid received:", albums);
   return (
-    <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {albums.map((album) => (
-        <AlbumCard key={album.id} album={album} onPlay={onPlay} />
-      ))}
+    <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {albums.map((album, index) => {
+        console.log(index, album);
+        return <AlbumCard key={album.id} album={album} onPlay={onPlay} />;
+      })}
     </ul>
   );
 }
