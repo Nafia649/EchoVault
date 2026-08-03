@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { FaPlay, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '@/context/FavoritesContext';
 
-function AlbumCard({ album, onPlay }) {
+const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(album.id);
@@ -72,9 +73,9 @@ function AlbumCard({ album, onPlay }) {
       </div>
     </li>
   );
-}
+});
 
-function AlbumGrid({ albums, onPlay }) {
+const AlbumGrid = memo(function AlbumGrid({ albums, onPlay }) {
   console.log("AlbumGrid received:", albums);
   return (
     <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -84,6 +85,6 @@ function AlbumGrid({ albums, onPlay }) {
       })}
     </ul>
   );
-}
+});
 
 export default AlbumGrid;

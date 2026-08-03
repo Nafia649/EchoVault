@@ -4,24 +4,14 @@ import AlbumGrid from '@/components/album/AlbumGrid/AlbumGrid';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import './PagePlaceholder.css';
 
-function Footer() {
-  return (
-    <footer className="mt-10 border-t border-neutral-800 py-6 px-6 flex justify-between items-center text-xs tracking-widest text-neutral-400 uppercase">
-      <span className="hover:text-white transition cursor-pointer">GitHub</span>
-      <a href="https://last.fm" target="_blank" rel="noreferrer" className="hover:text-white transition">
-        Powered by Last.fm ↗
-      </a>
-      <span className="hover:text-white transition cursor-pointer">LinkedIn</span>
-    </footer>
-  );
-}
+import Footer from '@/components/Footer';
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+    <div className="flex flex-col items-center justify-center gap-4 py-20 text-center transition-colors duration-300">
       <p className="text-5xl">🎵</p>
-      <h2 className="text-xl font-bold text-white">No favorites yet</h2>
-      <p className="text-sm text-neutral-400 max-w-xs">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300">No favorites yet</h2>
+      <p className="text-sm text-gray-500 dark:text-neutral-400 max-w-xs transition-colors duration-300">
         Browse albums and hit the heart icon to save them here.
       </p>
     </div>
@@ -89,11 +79,11 @@ export default function Favorites() {
 
           <div className="flex-1 min-w-0 pt-8">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-mono text-lg font-bold uppercase tracking-widest text-white">
+              <h2 className="font-mono text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-white transition-colors duration-300">
                 Albums
               </h2>
               {favorites.length > 0 && (
-                <span className="text-sm text-neutral-400">
+                <span className="text-sm text-gray-500 dark:text-neutral-400 transition-colors duration-300">
                   Showing {displayAlbums.length} {displayAlbums.length === 1 ? 'album' : 'albums'}
                 </span>
               )}

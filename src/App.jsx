@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { Suspense, lazy } from 'react';
+
 import MainLayout from "./layouts/MainLayout";
 
-import Home from "./pages/Home";
-import Favorites from "./pages/Favorites";
-import AlbumDetails from "./pages/AlbumDetails";
-import NotFound from "./pages/NotFound";
+const Home = lazy(() => import('./pages/Home'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+const AlbumDetails = lazy(() => import('./pages/AlbumDetails'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
   const basename = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -13,14 +15,16 @@ function App() {
   return (
     <BrowserRouter basename={basename}>
 
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/album/:id" element={<AlbumDetails />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-[#F3F4F6] dark:bg-black transition-colors duration-300"><div className="h-10 w-10 animate-spin rounded-full border-4 border-teal-500 border-t-transparent" /></div>}>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/album/:id" element={<AlbumDetails />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

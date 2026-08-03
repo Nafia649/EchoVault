@@ -16,9 +16,9 @@ const DEBOUNCE_MS = 350;
 
 // Matches AlbumSection's outer section classes so the skeleton and error
 // sections are visually flush with the real AlbumSection wrapper.
-const SECTION_CLS = 'bg-black py-10 sm:py-12';
+const SECTION_CLS = 'bg-[#F3F4F6] dark:bg-black transition-colors duration-300 py-10 sm:py-12';
 const INNER_CLS   = 'mx-auto max-w-5xl';
-const HEADING_CLS = 'font-mono text-lg font-bold uppercase tracking-widest text-white sm:text-xl';
+const HEADING_CLS = 'font-mono text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-white transition-colors duration-300 sm:text-xl';
 
 function Home() {
   const { isFavorite } = useFavorites();
@@ -239,6 +239,7 @@ function Home() {
           <SearchSection
             searchQuery={searchQuery}
             setSearchQuery={handleSetSearchQuery}
+            searchResults={searchResults}
           />
 
           {/*
@@ -274,7 +275,9 @@ function Home() {
               />
           )}
 
-          <TrendingArtists />
+          <TrendingArtists
+            onArtistClick={handleSetSearchQuery}
+          />
         </div>
 
         {/* ── Sidebar ── */}

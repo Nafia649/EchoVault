@@ -310,3 +310,55 @@ export async function getAlbum(albumId, signal) {
   return mappedAlbum;
 }
 
+export async function getArtistSuggestions(query, signal) {
+  if (!query || !query.trim()) return [];
+
+  const cacheKey = `lastfm:suggest:${query.trim().toLowerCase()}`;
+  const cachedData = getCache(cacheKey);
+
+  if (cachedData && cachedData.length > 0) {
+    return cachedData;
+  }
+
+  const response = await fetch(
+    `/api/lastfm/suggest?q=${encodeURIComponent(query.trim())}`,
+    { signal }
+  );
+
+  if (!response.ok) {
+    return []; // Fail silently for autocomplete
+  }
+
+  const data = await response.json();
+  const suggestions = data.data || [];
+  
+  if (suggestions.length > 0) {
+    setCache(cacheKey, suggestions);
+  }
+  return suggestions;
+}
+
+export async function getTrendingArtists(signal) {
+  const cacheKey = 'lastfm:trending_artists:v2';
+  const cachedData = getCache(cacheKey);
+
+  if (cachedData && cachedData.length > 0) {
+    return cachedData;
+  }
+
+  const response = await fetch('/api/lastfm/trending', { signal });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    throw new Error(errorBody.error || `Failed to fetch trending artists`);
+  }
+
+  const data = await response.json();
+  const artists = data.data || [];
+
+  if (artists.length > 0) {
+    setCache(cacheKey, artists);
+  }
+  return artists;
+}
+

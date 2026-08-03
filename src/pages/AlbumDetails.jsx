@@ -14,34 +14,34 @@ import './PagePlaceholder.css';
 
 function TrackRow({ track }) {
   return (
-    <li className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-800/60 transition group">
-      <span className="w-5 text-right text-xs text-neutral-500 shrink-0 group-hover:hidden">
+    <li className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800/60 transition-colors duration-300 group">
+      <span className="w-5 text-right text-xs text-gray-500 dark:text-neutral-500 shrink-0 group-hover:hidden transition-colors duration-300">
         {track.trackNumber}
       </span>
       <button
         aria-label={`Play ${track.title}`}
-        className="hidden group-hover:flex w-5 items-center justify-center text-white shrink-0"
+        className="hidden group-hover:flex w-5 items-center justify-center text-gray-900 dark:text-white shrink-0 transition-colors duration-300"
       >
         <FaPlay className="h-2.5 w-2.5" />
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white truncate">{track.title}</p>
-        <p className="text-xs text-neutral-500 truncate">{track.artist}</p>
+        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate transition-colors duration-300">{track.title}</p>
+        <p className="text-xs text-gray-500 dark:text-neutral-500 truncate transition-colors duration-300">{track.artist}</p>
       </div>
 
       <button
         aria-label="Add to playlist"
-        className="opacity-0 group-hover:opacity-100 transition text-neutral-400 hover:text-emerald-400"
+        className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-gray-400 dark:text-neutral-400 hover:text-emerald-500 dark:hover:text-emerald-400"
       >
         <FaPlus className="h-3.5 w-3.5" />
       </button>
 
-      <span className="text-xs text-neutral-400 shrink-0 w-9 text-right">{track.duration}</span>
+      <span className="text-xs text-gray-400 dark:text-neutral-400 shrink-0 w-9 text-right transition-colors duration-300">{track.duration}</span>
 
       <button
         aria-label="More options"
-        className="opacity-0 group-hover:opacity-100 transition text-neutral-400 hover:text-white"
+        className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-gray-400 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
       >
         <FaEllipsisH className="h-3.5 w-3.5" />
       </button>
@@ -98,7 +98,7 @@ export default function AlbumDetails() {
           <div className="flex items-center justify-between py-4">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition"
+              className="flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
             >
               <FaChevronLeft className="h-3 w-3" />
               <span>Album Page</span>
@@ -124,7 +124,7 @@ export default function AlbumDetails() {
           <div className="flex items-center justify-between py-4">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition"
+              className="flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
             >
               <FaChevronLeft className="h-3 w-3" />
               <span>Album Page</span>
@@ -142,8 +142,8 @@ export default function AlbumDetails() {
     return (
       <div className="page-placeholder min-h-[80vh] flex flex-col items-center justify-center gap-4 text-center px-6">
         <p className="text-5xl">🎵</p>
-        <h2 className="text-2xl font-bold text-white">Album Not Found</h2>
-        <p className="text-sm text-neutral-400">We couldn't find an album with that ID.</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">Album Not Found</h2>
+        <p className="text-sm text-gray-500 dark:text-neutral-400 transition-colors duration-300">We couldn't find an album with that ID.</p>
         <button
           onClick={() => navigate('/')}
           className="mt-2 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition text-black text-sm font-bold px-6 py-2"
@@ -164,7 +164,7 @@ export default function AlbumDetails() {
         <div className="flex items-center justify-between py-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition"
+            className="flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
           >
             <FaChevronLeft className="h-3 w-3" />
             <span>Album Page</span>
@@ -238,7 +238,7 @@ export default function AlbumDetails() {
             </div>
 
             <div className="mt-7">
-              <h3 className="text-white font-bold text-lg tracking-widest uppercase mb-3 px-3">
+              <h3 className="text-gray-900 dark:text-white font-bold text-lg tracking-widest uppercase mb-3 px-3 transition-colors duration-300">
                 Tracks
               </h3>
               <ul className="flex flex-col gap-0.5">

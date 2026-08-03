@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../components/layout/Navbar/Navbar";
-//import Footer from "../components/Footer/Footer";
+import MobileBottomNav from "../components/layout/MobileBottomNav";
 
 import "./MainLayout.css";
 
@@ -10,9 +10,11 @@ function MainLayout() {
     <>
       <Navbar />
 
-      <main className="main-content">
+      <main className="main-content pb-16 md:pb-0">
         <Outlet />
       </main>
+
+      <MobileBottomNav />
     </>
   );
 }

@@ -20,27 +20,27 @@ const CARD_PLACEHOLDER_COUNT = 5;
 
 function SkeletonCard() {
   return (
-    <li className="relative aspect-square w-full overflow-hidden rounded-2xl bg-neutral-900 animate-pulse">
+    <li className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gray-100 dark:bg-neutral-900 animate-pulse transition-colors duration-300">
       {/* Cover fill — mirrors absolute inset-0 image / gradient layer */}
-      <div className="absolute inset-0 bg-neutral-800/60" />
+      <div className="absolute inset-0 bg-gray-200 dark:bg-neutral-800/60 transition-colors duration-300" />
 
       {/* Bottom-to-top fade — mirrors `bg-gradient-to-t from-black/80 via-black/10 to-transparent` */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
       {/* Favorite button — absolute top-3 right-3 h-9 w-9 rounded-full */}
-      <div className="absolute top-3 right-3 h-9 w-9 rounded-full bg-neutral-700/60" />
+      <div className="absolute top-3 right-3 h-9 w-9 rounded-full bg-gray-300 dark:bg-neutral-700/60 transition-colors duration-300" />
 
       {/* Bottom content row — absolute bottom-0 left-0 right-0 flex items-end justify-between gap-2 p-3 */}
       <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-2 p-3">
         <div className="flex flex-col gap-1.5 min-w-0 flex-1">
           {/* Title — text-base font-bold */}
-          <div className="h-4 w-3/4 rounded bg-neutral-700/80" />
+          <div className="h-4 w-3/4 rounded bg-gray-300 dark:bg-neutral-700/80 transition-colors duration-300" />
           {/* Artist — text-sm */}
-          <div className="h-3.5 w-1/2 rounded bg-neutral-700/50" />
+          <div className="h-3.5 w-1/2 rounded bg-gray-200 dark:bg-neutral-700/50 transition-colors duration-300" />
         </div>
 
         {/* Play button — h-11 w-11 rounded-full shrink-0 */}
-        <div className="shrink-0 h-11 w-11 rounded-full bg-neutral-700/60" />
+        <div className="shrink-0 h-11 w-11 rounded-full bg-gray-300 dark:bg-neutral-700/60 transition-colors duration-300" />
       </div>
     </li>
   );

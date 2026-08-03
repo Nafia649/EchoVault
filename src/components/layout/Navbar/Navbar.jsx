@@ -1,66 +1,88 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FaHeart } from 'react-icons/fa';
-import { BsMoonStarsFill } from 'react-icons/bs';
-import { IoChevronDown } from 'react-icons/io5';
+import { Link, useLocation } from 'react-router-dom';
+import { FaHeart, FaHome, FaCompass, FaFolderOpen } from 'react-icons/fa';
+import { BsMoonStarsFill, BsSunFill } from 'react-icons/bs';
 import logo from '@/assets/logo_main.svg';
-
 import { useFavorites } from '@/context/FavoritesContext';
-import './Navbar.css';
+import { useTheme } from '@/context/ThemeContext';
 
-function Navbar() {
-  const [isDark, setIsDark] = useState(true);
+export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   const { newFavoritesCount } = useFavorites();
-  const count = newFavoritesCount;
+  const location = useLocation();
+
+  const isDark = theme === 'dark';
+
+  const navLinks = [
+    { path: '/', label: 'Home', icon: FaHome },
+    { path: '/discover', label: 'Discover', icon: FaCompass },
+    { path: '/collections', label: 'Collections', icon: FaFolderOpen },
+    { path: '/favorites', label: 'Favorites', icon: FaHeart, badge: newFavoritesCount },
+  ];
 
   return (
-    <nav className="navbar">
-      <div className="navbar__left">
-        <Link to="/" className="navbar__logo-link" aria-label="EchoVault home">
-          <span className="navbar__logo-icon">
-            <img src={logo} alt="EchoVault logo" className="navbar__logo" />
+    <nav className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center w-full min-h-[64px] px-4 md:px-8 bg-[#F3F4F6] dark:bg-black border-b border-[#E5E7EB] dark:border-white/10 transition-colors duration-300">
+      
+      {/* Left: Logo & Brand */}
+      <div className="flex items-center justify-self-start">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-md">
+          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-black dark:bg-white transition-colors duration-300">
+            <img src={logo} alt="EchoVault logo" className="w-5 h-5 dark:invert" />
+          </div>
+          <span className="hidden sm:block font-['Jersey_10'] text-[2rem] tracking-wider text-[#111827] dark:text-white transition-colors duration-300">
+            EchoVault
           </span>
         </Link>
       </div>
 
-      <div className="navbar__center">
-        <Link to="/" className="navbar__brand-link">
-          EchoVault
-        </Link>
+      {/* Center: Navigation Links */}
+      <div className="hidden md:flex items-center gap-1 md:gap-2 justify-self-center">
+        {navLinks.map(({ path, label, icon: Icon, badge }) => {
+          const isActive = location.pathname === path;
+          return (
+            <Link
+              key={path}
+              to={path}
+              className={`relative flex items-center gap-2 p-2 md:px-4 md:py-2 rounded-full font-medium transition-all duration-300 ${
+                isActive
+                  ? 'text-teal-600 bg-teal-50 dark:text-teal-400 dark:bg-teal-400/10'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10'
+              }`}
+            >
+              <Icon className="text-xl md:text-lg" />
+              <span className="hidden lg:block">{label}</span>
+              
+              {badge > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-green-500 rounded-full">
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </div>
 
-      <div className="navbar__right">
+      {/* Right: Theme Toggle */}
+      <div className="flex items-center justify-self-end">
         <button
           type="button"
-          className={`navbar__theme-toggle${isDark ? ' navbar__theme-toggle--dark' : ''}`}
-          onClick={() => setIsDark((p) => !p)}
+          onClick={toggleTheme}
           aria-label="Toggle theme"
-          aria-pressed={isDark}
+          className="relative flex items-center p-1 w-14 h-7 rounded-full bg-gray-300 dark:bg-[#141414] border border-transparent dark:border-white/10 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
         >
-          <BsMoonStarsFill className="navbar__theme-icon" aria-hidden="true" />
-          <IoChevronDown className="navbar__chevron-icon" aria-hidden="true" />
+          <span
+            className={`flex items-center justify-center w-5 h-5 rounded-full bg-white dark:bg-black shadow-sm transform transition-transform duration-300 ease-in-out ${
+              isDark ? 'translate-x-7' : 'translate-x-0'
+            }`}
+          >
+            {isDark ? (
+              <BsMoonStarsFill className="text-[10px] text-white" />
+            ) : (
+              <BsSunFill className="text-[11px] text-yellow-500" />
+            )}
+          </span>
         </button>
-
-        <Link
-        to="/favorites"
-        className="navbar__icon-button"
-        aria-label={`View favorites${count > 0 ? ` (${count})` : ''}`}
-      >
-        <span className="navbar__heart-wrapper">
-          <FaHeart
-            className={`navbar__heart${count > 0 ? ' navbar__heart--active' : ''}`}
-          />
-
-          {count > 0 && (
-            <span className="navbar__badge">
-              {count > 99 ? '99+' : count}
-            </span>
-          )}
-        </span>
-      </Link>
       </div>
+
     </nav>
   );
 }
-
-export default Navbar;
