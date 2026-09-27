@@ -1,3 +1,5 @@
+import SidebarWidget from './SidebarWidget';
+
 function Sidebar({
   filterOption,
   sortOption,
@@ -53,21 +55,24 @@ function Sidebar({
         </button>
       </div>
 
-      {/* Last.fm promo card (To be replaced with widget in Phase 2) */}
+      {/* Dynamic Widget */}
+      <SidebarWidget />
+      
+      {/* Last.fm Promo */}
       <div className="rounded-[1.5rem] bg-[#96c8c4] dark:bg-neutral-900 border-none p-5 flex flex-col gap-3 text-center mt-2 transition-colors duration-300 shadow-sm">
-        <p className="text-gray-900 dark:text-white font-bold text-base leading-snug transition-colors duration-300">
-          Discover More
+        <p className="text-gray-900 dark:text-white font-bold text-sm leading-snug transition-colors duration-300">
+          If you don't have Last.fm
         </p>
-        <p className="text-gray-700 dark:text-neutral-400 text-xs transition-colors duration-300">
-          Explore artists, albums and music trends on Last.fm.
+        <p className="text-gray-700 dark:text-neutral-400 text-[11px] transition-colors duration-300">
+          Download it now to track your listening history and get more personalized recommendations.
         </p>
         <a
-          href="https://www.last.fm/"
+          href="https://www.last.fm/about/trackmymusic"
           target="_blank"
           rel="noreferrer"
           className="block rounded-full bg-rose-500 hover:bg-rose-600 active:scale-95 transition text-white text-xs font-bold py-2.5 px-3 mt-1 shadow-sm"
         >
-          Visit Last.fm ↗
+          Download Now ↗
         </a>
       </div>
     </aside>

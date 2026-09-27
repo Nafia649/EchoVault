@@ -16,7 +16,7 @@
 
 const CACHE_LIFETIME = 30 * 60 * 1000; // 30 minutes in milliseconds
 
-function getCache(key) {
+export function getCache(key) {
   try {
     const cached = sessionStorage.getItem(key);
     if (!cached) return null;
@@ -31,7 +31,7 @@ function getCache(key) {
   }
 }
 
-function setCache(key, data) {
+export function setCache(key, data) {
   try {
     sessionStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
   } catch (e) {
@@ -362,3 +362,37 @@ export async function getTrendingArtists(signal) {
   return artists;
 }
 
+export async function getArtistTopAlbums(artistName, signal) {
+  if (!artistName) return [];
+  const cacheKey = `lastfm:artist_top:${artistName}`;
+  const cachedData = getCache(cacheKey);
+
+  if (cachedData && cachedData.length > 0) return cachedData;
+
+  const response = await fetch(`/api/lastfm/artistTopAlbums?artist=${encodeURIComponent(artistName)}`, { signal });
+  if (!response.ok) return [];
+
+  const data = await response.json();
+  const items = data.data || [];
+  const mappedAlbums = items.map(mapLastFmAlbum).filter(Boolean);
+
+  if (mappedAlbums.length > 0) setCache(cacheKey, mappedAlbums);
+  return mappedAlbums;
+}
+
+export async function getSimilarArtists(artistName, limit = 10, signal) {
+  if (!artistName) return [];
+  const cacheKey = `lastfm:similar:${artistName}`;
+  const cachedData = getCache(cacheKey);
+
+  if (cachedData && cachedData.length > 0) return cachedData;
+
+  const response = await fetch(`/api/lastfm/similar?artist=${encodeURIComponent(artistName)}&limit=${limit}`, { signal });
+  if (!response.ok) return [];
+
+  const data = await response.json();
+  const artists = data.data || [];
+
+  if (artists.length > 0) setCache(cacheKey, artists);
+  return artists;
+}

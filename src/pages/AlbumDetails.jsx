@@ -7,7 +7,9 @@ import Footer from '@/components/Footer';
 import SkeletonAlbumDetails from '@/components/album/SkeletonAlbumDetails';
 import ErrorMessage from '@/components/ErrorMessage';
 import { useFavorites } from '../context/FavoritesContext';
-import { getAlbum } from '@/services/lastfmApi';
+import { useHistory } from '../context/HistoryContext';
+import { getAlbum, getArtistTopAlbums, getSimilarArtists } from '@/services/lastfmApi';
+import { AlbumCard } from '@/components/album/AlbumGrid/AlbumGrid';
 import './PagePlaceholder.css';
 
 /* ─── Track Row ─────────────────────────────────────────────────────────── */
@@ -55,8 +57,11 @@ export default function AlbumDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { addToHistory } = useHistory();
 
   const [album, setAlbum]       = useState(null);
+  const [moreAlbums, setMoreAlbums] = useState([]);
+  const [similarArtists, setSimilarArtists] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError]       = useState(null);
 
@@ -77,7 +82,18 @@ export default function AlbumDetails() {
     getAlbum(id, controller.signal)
       .then((data) => {
         setAlbum(data);
+        addToHistory(data);
         setIsLoading(false);
+        // Fetch more albums and similar artists
+        if (data && data.artist) {
+          Promise.all([
+            getArtistTopAlbums(data.artist, controller.signal),
+            getSimilarArtists(data.artist, 5, controller.signal)
+          ]).then(([albums, artists]) => {
+            setMoreAlbums(albums.filter(a => a.id !== data.id).slice(0, 4));
+            setSimilarArtists(artists.slice(0, 5));
+          }).catch(() => {});
+        }
       })
       .catch((err) => {
         if (err.name === 'AbortError') return; // navigated away — ignore silently
@@ -247,6 +263,55 @@ export default function AlbumDetails() {
                 ))}
               </ul>
             </div>
+            
+            {(moreAlbums.length > 0 || similarArtists.length > 0) && (
+              <div className="mt-12 space-y-10">
+                {moreAlbums.length > 0 && (
+                  <div>
+                    <h3 className="text-gray-900 dark:text-white font-bold text-lg tracking-widest uppercase mb-4 transition-colors duration-300">
+                      More by {album.artist}
+                    </h3>
+                    <div className="flex overflow-x-auto pb-4 hide-scrollbar gap-6 snap-x snap-mandatory scroll-smooth">
+                      {moreAlbums.map((a) => (
+                        <div key={a.id} className="flex-none w-40 sm:w-44 lg:w-48 snap-start">
+                          <AlbumCard album={a} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {similarArtists.length > 0 && (
+                  <div>
+                    <h3 className="text-gray-900 dark:text-white font-bold text-lg tracking-widest uppercase mb-4 transition-colors duration-300">
+                      Similar Artists
+                    </h3>
+                    <div className="flex overflow-x-auto pb-4 hide-scrollbar gap-6 snap-x snap-mandatory scroll-smooth">
+                      {similarArtists.map((artist) => (
+                        <div
+                          key={artist.id}
+                          onClick={() => navigate(`/?search=${encodeURIComponent(artist.name)}`)}
+                          className="flex-none flex flex-col items-center cursor-pointer group snap-start"
+                        >
+                          <div className="h-28 w-28 rounded-full overflow-hidden ring-2 ring-gray-200 dark:ring-neutral-800 group-hover:ring-[#49ACC0] dark:group-hover:ring-[#49ACC0] transition-all duration-300">
+                            {artist.image ? (
+                              <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center">
+                                <span className="text-xl font-bold text-gray-500">{artist.name[0]}</span>
+                              </div>
+                            )}
+                          </div>
+                          <span className="mt-3 text-sm font-semibold text-gray-900 dark:text-white max-w-[112px] text-center truncate">
+                            {artist.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <Sidebar />

@@ -3,7 +3,7 @@ import { FaPlay, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '@/context/FavoritesContext';
 
-const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
+export const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(album.id);
