@@ -1,4 +1,4 @@
-import { getArtistTopAlbums, getSimilarArtists, getTrendingArtists, getCache, setCache } from './lastfmApi';
+import { getArtistTopAlbums, getSimilarArtists, getCache, setCache } from './lastfmApi';
 
 // Shuffle an array using Fisher-Yates
 function shuffle(array) {

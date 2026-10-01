@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaPlay, FaPlus, FaEllipsisH, FaChevronLeft } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaPlay, FaPlus, FaChevronLeft } from 'react-icons/fa';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
@@ -10,6 +10,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useHistory } from '../context/HistoryContext';
 import { getAlbum, getArtistTopAlbums, getSimilarArtists } from '@/services/lastfmApi';
 import { AlbumCard } from '@/components/album/AlbumGrid/AlbumGrid';
+import AddToCollectionModal from '@/components/modals/AddToCollectionModal';
 import './PagePlaceholder.css';
 
 /* ─── Track Row ─────────────────────────────────────────────────────────── */
@@ -32,21 +33,7 @@ function TrackRow({ track }) {
         <p className="text-xs text-gray-500 dark:text-neutral-500 truncate transition-colors duration-300">{track.artist}</p>
       </div>
 
-      <button
-        aria-label="Add to playlist"
-        className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-gray-400 dark:text-neutral-400 hover:text-emerald-500 dark:hover:text-emerald-400"
-      >
-        <FaPlus className="h-3.5 w-3.5" />
-      </button>
-
       <span className="text-xs text-gray-400 dark:text-neutral-400 shrink-0 w-9 text-right transition-colors duration-300">{track.duration}</span>
-
-      <button
-        aria-label="More options"
-        className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-gray-400 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
-      >
-        <FaEllipsisH className="h-3.5 w-3.5" />
-      </button>
     </li>
   );
 }
@@ -66,6 +53,7 @@ export default function AlbumDetails() {
   const [error, setError]       = useState(null);
 
   const abortControllerRef = useRef(null);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -231,6 +219,15 @@ export default function AlbumDetails() {
                       {favorited ? 'Remove Favorite' : 'Add to Favorites'}
                     </button>
 
+                    <button
+                      onClick={() => setShowCollectionModal(true)}
+                      aria-label="Add to Collection"
+                      className="flex items-center gap-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-4 py-1.5 backdrop-blur-sm active:scale-95 transition-all duration-200"
+                    >
+                      <FaPlus className="h-3 w-3" />
+                      Add to Collection
+                    </button>
+
                     {album.link && (
                       <a
                         href={album.link}
@@ -319,6 +316,12 @@ export default function AlbumDetails() {
       </div>
 
       <Footer />
+
+      <AddToCollectionModal
+        album={album}
+        isOpen={showCollectionModal}
+        onClose={() => setShowCollectionModal(false)}
+      />
     </div>
   );
 }

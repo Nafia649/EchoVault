@@ -1,16 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FaHeart, FaHome, FaCompass, FaFolderOpen } from 'react-icons/fa';
+import { FaHeart, FaHome, FaCompass, FaFolderOpen, FaSearch } from 'react-icons/fa';
 import { BsMoonStarsFill, BsSunFill } from 'react-icons/bs';
 import logo from '@/assets/logo_main.svg';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useTheme } from '@/context/ThemeContext';
 
-export default function Navbar() {
+export default function Navbar({ onOpenPalette }) {
   const { theme, toggleTheme } = useTheme();
   const { newFavoritesCount } = useFavorites();
   const location = useLocation();
 
   const isDark = theme === 'dark';
+  const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.userAgent);
 
   const navLinks = [
     { path: '/', label: 'Home', icon: FaHome },
@@ -61,8 +62,21 @@ export default function Navbar() {
         })}
       </div>
 
-      {/* Right: Theme Toggle */}
-      <div className="flex items-center justify-self-end">
+      {/* Right: Command Palette Hint + Theme Toggle */}
+      <div className="flex items-center gap-2 justify-self-end">
+        {/* Ctrl+K hint */}
+        <button
+          type="button"
+          onClick={onOpenPalette}
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200/70 dark:bg-white/5 border border-gray-300 dark:border-white/10 hover:bg-gray-300 dark:hover:bg-white/10 transition-colors duration-200 group"
+        >
+          <FaSearch className="h-3 w-3 text-gray-400 dark:text-neutral-500 group-hover:text-gray-600 dark:group-hover:text-neutral-300 transition-colors duration-200" />
+          <span className="text-[11px] font-medium text-gray-400 dark:text-neutral-500 group-hover:text-gray-600 dark:group-hover:text-neutral-300 transition-colors duration-200">
+            {isMac ? '⌘K' : 'Ctrl+K'}
+          </span>
+        </button>
+
+        {/* Theme toggle */}
         <button
           type="button"
           onClick={toggleTheme}
@@ -86,3 +100,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

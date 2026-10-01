@@ -9,6 +9,7 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
 import { searchAlbums, getFeaturedAlbums } from '@/services/lastfmApi';
 import { useFavorites } from '@/context/FavoritesContext';
+import { useFilterSort } from '@/hooks/useFilterSort';
 import './PagePlaceholder.css';
 
 const PAGE_SIZE = 10;
@@ -21,7 +22,6 @@ const INNER_CLS   = 'mx-auto max-w-5xl';
 const HEADING_CLS = 'font-mono text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-white transition-colors duration-300 sm:text-xl';
 
 function Home() {
-  const { isFavorite } = useFavorites();
   const [searchQuery, setSearchQuery]   = useState('');
   const [page, setPage]                 = useState(0);
   const [searchResults, setSearchResults] = useState([]);
@@ -30,8 +30,12 @@ function Home() {
   const [error, setError]               = useState(null);
   const [lastSuccessfulQuery, setLastSuccessfulQuery] = useState('');
 
-  const [filterOption, setFilterOption] = useState('All Albums');
-  const [sortOption, setSortOption]     = useState('Alphabetical (A–Z)');
+  const {
+    filterOption, setFilterOption,
+    sortOption, setSortOption,
+    handleClearFilters,
+    processItems
+  } = useFilterSort();
 
   // Holds the setTimeout ID so we can cancel it on each new keystroke.
   const debounceRef = useRef(null);
@@ -109,12 +113,10 @@ function Home() {
 
       try {
         const results = await searchAlbums(searchQuery.trim(), controller.signal);
-        console.log("Search results:", results);
         setSearchResults(results);
         if (results.length > 0) {
           setLastSuccessfulQuery(searchQuery.trim());
         }
-        console.log("Setting search results...");
         setPage(0);
         setIsLoading(false);
       } catch (err) {
@@ -150,75 +152,23 @@ function Home() {
     rawDisplayAlbums = featuredAlbums;
   }
 
-  const displayAlbums = useMemo(() => {
-    let result = [...rawDisplayAlbums];
-
-    // 1. Filter
-    if (filterOption === 'Favorites') {
-      result = result.filter(a => isFavorite(a.id));
-    } else if (filterOption === 'Has Album Cover') {
-      result = result.filter(a => !!a.image);
-    } else if (filterOption === 'Has Last.fm Link') {
-      result = result.filter(a => !!a.link || !!a.url);
-    }
-
-    // 2. Sort
-    result.sort((a, b) => {
-      if (sortOption === 'Alphabetical (A–Z)') {
-        return a.title.localeCompare(b.title);
-      }
-      if (sortOption === 'Alphabetical (Z–A)') {
-        return b.title.localeCompare(a.title);
-      }
-      if (sortOption === 'Artist (A–Z)') {
-        return a.artist.localeCompare(b.artist);
-      }
-      if (sortOption === 'Artist (Z–A)') {
-        return b.artist.localeCompare(a.artist);
-      }
-      if (sortOption === 'Newest Release') {
-        const yearA = parseInt(a.year, 10) || 0;
-        const yearB = parseInt(b.year, 10) || 0;
-        return yearB - yearA;
-      }
-      if (sortOption === 'Oldest Release') {
-        const yearA = parseInt(a.year, 10) || 9999;
-        const yearB = parseInt(b.year, 10) || 9999;
-        return yearA - yearB;
-      }
-      return 0;
-    });
-
-    return result;
-  }, [rawDisplayAlbums, filterOption, sortOption, isFavorite]);
+  const displayAlbums = useMemo(() => processItems(rawDisplayAlbums), [rawDisplayAlbums, processItems]);
 
   const totalPages     = Math.ceil(displayAlbums.length / PAGE_SIZE);
   const paginatedAlbums = displayAlbums.slice(
     page * PAGE_SIZE,
     page * PAGE_SIZE + PAGE_SIZE
   );
-  console.log({
-  isSearching,
-  searchQuery,
-  page,
-  searchResultsLength: searchResults.length,
-  featuredAlbumsLength: featuredAlbums.length,
-  displayAlbumsLength: displayAlbums.length,
-  paginatedAlbumsLength: paginatedAlbums.length,
-  filterOption,
-  sortOption,
-});
 
   function handleSetSearchQuery(q) {
     setSearchQuery(q);
     setPage(0);
   }
 
-  function handleClearFilters() {
-    setFilterOption('All Albums');
-    setSortOption('Alphabetical (A–Z)');
+  const onClearFilters = () => {
+    handleClearFilters();
     setPage(0);
-  }
+  };
 
   /* ── Render ─────────────────────────────────────────────────────────── */
   let sectionTitle;
@@ -271,7 +221,8 @@ function Home() {
                 setPage={setPage}
                 totalPages={totalPages}
                 totalAlbums={displayAlbums.length}
-                onClearFilters={handleClearFilters}
+                isFiltered={filterOption !== 'All Albums' || sortOption !== 'Alphabetical (A–Z)'}
+                onClearFilters={onClearFilters}
               />
           )}
 
@@ -286,7 +237,7 @@ function Home() {
           sortOption={sortOption}
           onFilterChange={(val) => { setFilterOption(val); setPage(0); }}
           onSortChange={(val) => { setSortOption(val); setPage(0); }}
-          onClearFilters={handleClearFilters}
+          onClearFilters={onClearFilters}
         />
       </div>
 

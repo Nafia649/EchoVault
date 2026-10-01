@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaChevronRight } from 'react-icons/fa';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
@@ -9,6 +8,8 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useHistory } from '../context/HistoryContext';
 import { getTrendingArtists } from '@/services/lastfmApi';
 import { getRecommendedForYou, getArtistsYouMayLike, getHiddenGems } from '@/services/recommendationEngine';
+
+import { useFilterSort } from '@/hooks/useFilterSort';
 
 function ArtistScroller({ artists, title, onArtistClick }) {
   if (!artists || artists.length === 0) return null;
@@ -72,6 +73,13 @@ export default function Discover() {
   const { favorites } = useFavorites();
   const { recentlyViewed } = useHistory();
   
+  const {
+    filterOption, setFilterOption,
+    sortOption, setSortOption,
+    handleClearFilters,
+    processItems
+  } = useFilterSort();
+
   const [recommended, setRecommended] = useState([]);
   const [similarArtists, setSimilarArtists] = useState([]);
   const [trending, setTrending] = useState([]);
@@ -95,19 +103,19 @@ export default function Discover() {
 
     getRecommendedForYou(favorites, recentlyViewed, controller.signal)
       .then(data => { setRecommended(data); setIsLoadingRec(false); })
-      .catch(() => setIsLoadingRec(false));
+      .catch((err) => { if (err.name !== 'AbortError') setIsLoadingRec(false); });
 
     getArtistsYouMayLike(favorites, recentlyViewed, controller.signal)
       .then(data => { setSimilarArtists(data); setIsLoadingSim(false); })
-      .catch(() => setIsLoadingSim(false));
+      .catch((err) => { if (err.name !== 'AbortError') setIsLoadingSim(false); });
 
     getTrendingArtists(controller.signal)
       .then(data => { setTrending(data); setIsLoadingTrend(false); })
-      .catch(() => setIsLoadingTrend(false));
+      .catch((err) => { if (err.name !== 'AbortError') setIsLoadingTrend(false); });
 
     getHiddenGems(controller.signal)
       .then(data => { setHiddenGems(data); setIsLoadingGems(false); })
-      .catch(() => setIsLoadingGems(false));
+      .catch((err) => { if (err.name !== 'AbortError') setIsLoadingGems(false); });
 
     return () => abortControllerRef.current?.abort();
   }, [favorites, recentlyViewed]);
@@ -117,20 +125,31 @@ export default function Discover() {
   };
 
   return (
-    <div className="bg-[#F3F4F6] dark:bg-black min-h-screen transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-10 sm:py-12 flex gap-8 items-start">
-        <div className="flex-1 min-w-0">
-          
-          <div className="mb-10">
-            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">Discover</h1>
-            <p className="mt-2 text-gray-500 dark:text-gray-400">Personalized recommendations and trending hits.</p>
-          </div>
+    <div className="page-placeholder">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#F97316] via-[#E11D48] to-[#7C3AED] px-6 py-14 sm:px-10 rounded-lg">
+        <div className="pointer-events-none absolute -top-16 -left-16 h-64 w-64 rounded-full bg-orange-400/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-rose-400/20 blur-3xl" />
+
+        <div className="relative max-w-5xl mx-auto">
+          <p className="text-xs font-mono text-white/50 uppercase tracking-widest mb-2">Explore</p>
+          <h1 className="font-mono font-bold text-3xl sm:text-4xl text-white tracking-wide leading-tight mb-3">
+            Discover
+          </h1>
+          <p className="text-orange-200 font-mono text-sm sm:text-base">
+            Personalized recommendations<br />and trending hits.
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 pb-10">
+        <div className="flex gap-8 items-start">
+          <div className="flex-1 min-w-0 pt-8">
 
           <div className="flex flex-col">
             {isLoadingRec ? (
               <div className="h-48 w-full bg-gray-200 dark:bg-neutral-800 animate-pulse rounded-2xl mb-12"></div>
             ) : recommended.length > 0 ? (
-              <AlbumScroller title="Recommended For You" albums={recommended} />
+              <AlbumScroller title="Recommended For You" albums={processItems(recommended)} />
             ) : (
               <div className="mb-12 bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-white/5">
                 <h2 className="font-bold text-lg text-gray-900 dark:text-white mb-2">Start discovering music</h2>
@@ -138,12 +157,12 @@ export default function Discover() {
               </div>
             )}
             
-            {recentlyViewed.length > 0 && <AlbumScroller title="Recently Viewed" albums={recentlyViewed} />}
+            {recentlyViewed.length > 0 && <AlbumScroller title="Recently Viewed" albums={processItems(recentlyViewed)} />}
             
             {isLoadingSim ? null : (
               <ArtistScroller 
                 title="Artists You May Like" 
-                artists={similarArtists} 
+                artists={processItems(similarArtists)} 
                 onArtistClick={handleArtistClick} 
               />
             )}
@@ -151,21 +170,28 @@ export default function Discover() {
             {isLoadingTrend ? null : (
               <ArtistScroller 
                 title="Trending Worldwide" 
-                artists={trending} 
+                artists={processItems(trending)} 
                 onArtistClick={handleArtistClick} 
               />
             )}
             
             {isLoadingGems ? null : (
-              <AlbumScroller title="Hidden Gems" albums={hiddenGems} />
+              <AlbumScroller title="Hidden Gems" albums={processItems(hiddenGems)} />
             )}
           </div>
 
         </div>
 
         <div className="hidden lg:block">
-          <Sidebar />
+          <Sidebar 
+            filterOption={filterOption}
+            sortOption={sortOption}
+            onFilterChange={setFilterOption}
+            onSortChange={setSortOption}
+            onClearFilters={handleClearFilters}
+          />
         </div>
+      </div>
       </div>
       <Footer />
     </div>

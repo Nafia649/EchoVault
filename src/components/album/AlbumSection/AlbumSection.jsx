@@ -1,10 +1,10 @@
 import AlbumGrid from '../AlbumGrid/AlbumGrid';
 import EmptyState from './EmptyState';
 
-function AlbumSection({ title, albums = [], searchQuery = '', page, setPage, totalPages, totalAlbums, onClearFilters }) {
+function AlbumSection({ title, albums = [], searchQuery = '', page, setPage, totalPages, totalAlbums, isFiltered = false, onClearFilters }) {
   const isSearching = searchQuery.trim().length > 0;
   const displayTitle = title || (isSearching ? 'Search Results' : 'Featured Albums');
-  const isFilteredEmpty = totalAlbums > 0 && albums.length === 0;
+  const showFilteredEmpty = isFiltered && albums.length === 0;
 
   return (
     <section className="">
@@ -47,7 +47,7 @@ function AlbumSection({ title, albums = [], searchQuery = '', page, setPage, tot
         </div>
 
         {albums.length === 0 ? (
-          <EmptyState isFiltered={isFilteredEmpty} onClearFilters={onClearFilters} />
+          <EmptyState isFiltered={showFilteredEmpty} onClearFilters={onClearFilters} />
         ) : (
           <AlbumGrid albums={albums} />
         )}

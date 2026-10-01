@@ -45,25 +45,30 @@ export default async function handler(req, res) {
       usedGroups.add(groupIndex);
       const artists = FEATURED_ARTIST_GROUPS[groupIndex];
 
-      // Fetch sequentially to avoid triggering rate limits on Last.fm
+      // Fetch concurrently to speed up response and avoid Vercel timeout
       let allAlbums = [];
-      for (const artist of artists) {
+      const fetchPromises = artists.map(async (artist) => {
         const url = `https://ws.audioscrobbler.com/2.0/?method=artist.gettopalbums&artist=${encodeURIComponent(artist)}&api_key=${apiKey}&format=json&limit=8`;
         try {
           const r = await fetch(url);
           if (!r.ok) {
             console.error(`Featured API fetch failed for ${artist} with status ${r.status}`);
-            continue;
+            return [];
           }
           const data = await r.json();
           const artistMatches = data.topalbums?.album;
           if (artistMatches) {
-            const list = Array.isArray(artistMatches) ? artistMatches : [artistMatches];
-            allAlbums.push(...list);
+            return Array.isArray(artistMatches) ? artistMatches : [artistMatches];
           }
         } catch (e) {
           console.error(`Featured API network error for ${artist}:`, e);
         }
+        return [];
+      });
+      
+      const results = await Promise.all(fetchPromises);
+      for (const resList of results) {
+        allAlbums.push(...resList);
       }
 
       for (const item of allAlbums) {

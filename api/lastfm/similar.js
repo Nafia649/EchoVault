@@ -1,11 +1,11 @@
 export default async function handler(req, res) {
-  const { artist, limit = 10 } = req.query;
-  if (!artist) return res.status(400).json({ error: 'Artist is required' });
-
-  const API_KEY = process.env.LASTFM_API_KEY;
-  if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
-
   try {
+    const { artist, limit = 10 } = req.query;
+    if (!artist) return res.status(400).json({ error: 'Artist is required' });
+
+    const API_KEY = process.env.LASTFM_API_KEY;
+    if (!API_KEY) return res.status(500).json({ error: 'API key not configured' });
+
     const response = await fetch(
       `https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${encodeURIComponent(
         artist

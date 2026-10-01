@@ -1,15 +1,24 @@
-import { memo } from 'react';
-import { FaPlay, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { memo, useState } from 'react';
+import { FaPlay, FaHeart, FaRegHeart, FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { motion, LayoutGroup } from 'framer-motion';
 import { useFavorites } from '@/context/FavoritesContext';
+import AddToCollectionModal from '@/components/modals/AddToCollectionModal';
 
 export const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(album.id);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   
   return (
-    <li>
+    <motion.li
+      layout
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+    >
       <div
         role="button"
         tabIndex={0}
@@ -50,6 +59,19 @@ export const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
             : <FaRegHeart className="h-4 w-4" aria-hidden="true" />}
         </button>
 
+        {/* Add to Collection button — top left */}
+        <button
+          type="button"
+          aria-label={`Add ${album.title} to collection`}
+          onClick={(e) => { e.stopPropagation(); setShowCollectionModal(true); }}
+          className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-full
+                     shadow-md bg-black/40 text-white
+                     opacity-0 group-hover:opacity-100
+                     transition-all duration-200 ease-out hover:scale-110 hover:bg-black/60"
+        >
+          <FaPlus className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
+
         <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between gap-2 p-3">
           <div className="min-w-0 translate-y-1 transition-transform duration-300 ease-out group-hover:translate-y-0">
             <p className="truncate text-base font-bold text-white leading-tight">{album.title}</p>
@@ -71,20 +93,27 @@ export const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
           </button>
         </div>
       </div>
-    </li>
+
+      <AddToCollectionModal
+        album={album}
+        isOpen={showCollectionModal}
+        onClose={() => setShowCollectionModal(false)}
+      />
+    </motion.li>
   );
 });
 
 const AlbumGrid = memo(function AlbumGrid({ albums, onPlay }) {
-  console.log("AlbumGrid received:", albums);
   return (
-    <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {albums.map((album, index) => {
-        console.log(index, album);
-        return <AlbumCard key={album.id} album={album} onPlay={onPlay} />;
-      })}
-    </ul>
+    <LayoutGroup>
+      <ul className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {albums.map((album) => (
+          <AlbumCard key={album.id} album={album} onPlay={onPlay} />
+        ))}
+      </ul>
+    </LayoutGroup>
   );
 });
 
 export default AlbumGrid;
+

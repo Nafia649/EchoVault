@@ -5,13 +5,15 @@ function Sidebar({
   sortOption,
   onFilterChange,
   onSortChange,
-  onClearFilters
+  onClearFilters,
+  hideFilter
 }) {
   return (
     <aside className="hidden lg:flex flex-col gap-5 w-52 shrink-0 pt-16">
       {/* Filter | Sort Controls */}
       <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1.5">
+        {!hideFilter && (
+          <div className="flex flex-col gap-1.5">
           <label htmlFor="filter-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">
             Filter
           </label>
@@ -27,6 +29,7 @@ function Sidebar({
             <option value="Has Last.fm Link">Has Last.fm Link</option>
           </select>
         </div>
+        )}
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="sort-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">

@@ -232,13 +232,6 @@ export async function searchAlbums(query, signal) {
 
   const data = await response.json();
 
-  console.log("Query:", query);
-  console.table(
-    data.data.map(a => ({
-      title: a.name,
-      artist: typeof a.artist === "string" ? a.artist : a.artist?.name
-    }))
-  );
 
   const items = data.data || [];
   
@@ -246,7 +239,6 @@ export async function searchAlbums(query, signal) {
     .filter(item => item.name && item.name !== '(null)')
     .map(mapLastFmAlbum)
     .filter(Boolean);
-    console.log("First mapped album:", mappedAlbums[0]);
   if (mappedAlbums.length > 0) {
     setCache(cacheKey, mappedAlbums);
   }

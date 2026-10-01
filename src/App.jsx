@@ -6,6 +6,7 @@ import MainLayout from "./layouts/MainLayout";
 
 const Home = lazy(() => import('./pages/Home'));
 const Discover = lazy(() => import('./pages/Discover'));
+const Collections = lazy(() => import('./pages/Collections'));
 const Favorites = lazy(() => import('./pages/Favorites'));
 const AlbumDetails = lazy(() => import('./pages/AlbumDetails'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -21,6 +22,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/collections" element={<Collections />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/album/:id" element={<AlbumDetails />} />
             <Route path="*" element={<NotFound />} />
