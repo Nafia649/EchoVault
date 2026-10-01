@@ -32,7 +32,7 @@ export default async function handler(req, res) {
               imageUrl = dzData.data[0].picture_xl || dzData.data[0].picture_medium;
             }
           }
-        } catch (e) {
+        } catch {
           // Ignore
         }
 
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     );
 
     return res.status(200).json({ data: formatted });
-  } catch (error) {
+  } catch {
     return res.status(500).json({ error: 'Failed to fetch similar artists' });
   }
 }

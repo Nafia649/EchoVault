@@ -26,7 +26,7 @@ export function getCache(key) {
       return null;
     }
     return data;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -34,18 +34,12 @@ export function getCache(key) {
 export function setCache(key, data) {
   try {
     sessionStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
-  } catch (e) {
+  } catch {
     // Silently fail if sessionStorage is unavailable
   }
 }
 
-function removeCache(key) {
-  try {
-    sessionStorage.removeItem(key);
-  } catch (e) {
-    // Silently fail
-  }
-}
+
 
 const GRADIENT_PALETTES = [
   'from-indigo-900 to-violet-700',
@@ -96,7 +90,7 @@ export function decodeAlbumId(encodedId) {
     }
     const decoded = new TextDecoder().decode(bytes);
     return decoded.split(':::');
-  } catch (e) {
+  } catch {
     return ['', ''];
   }
 }

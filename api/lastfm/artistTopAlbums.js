@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const formatted = Array.isArray(albums) ? albums : [albums];
     
     return res.status(200).json({ data: formatted });
-  } catch (error) {
+  } catch {
     return res.status(500).json({ error: 'Failed to fetch artist top albums' });
   }
 }

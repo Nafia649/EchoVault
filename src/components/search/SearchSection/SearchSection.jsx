@@ -3,7 +3,7 @@ import { FiSearch, FiClock, FiUser } from 'react-icons/fi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { getArtistSuggestions } from '@/services/lastfmApi';
 
-function SearchSection({ searchQuery, setSearchQuery, searchResults = [] }) {
+function SearchSection({ searchQuery, setSearchQuery }) {
   const [isFocused, setIsFocused] = useState(false);
   const { recentSearches, addSearch, clearSearches } = useRecentSearches();
   const dropdownRef = useRef(null);

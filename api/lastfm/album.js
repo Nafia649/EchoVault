@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     let decodedString;
     try {
       decodedString = Buffer.from(id, 'base64').toString('utf8');
-    } catch (e) {
+    } catch {
       return res.status(400).json({ error: 'Invalid album ID format' });
     }
 

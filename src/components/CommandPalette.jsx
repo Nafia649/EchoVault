@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaSearch, FaHome, FaCompass, FaHeart, FaFolderOpen,
-  FaPlus, FaTimes, FaTrash, FaExternalLinkAlt, FaDice,
+  FaPlus, FaTrash, FaExternalLinkAlt, FaDice,
 } from 'react-icons/fa';
 import { FiClock } from 'react-icons/fi';
 import { BsMoonStarsFill, BsSunFill } from 'react-icons/bs';
@@ -17,7 +17,7 @@ export default function CommandPalette({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { recentlyViewed, clearHistory } = useHistory();
-  const { collections, createCollection } = useCollections();
+  const { collections } = useCollections();
   const { favorites } = useFavorites();
   const { recentSearches, clearSearches } = useRecentSearches();
 
@@ -139,7 +139,7 @@ export default function CommandPalette({ isOpen, onClose }) {
       },
     ];
     return items;
-  }, [theme, recentlyViewed, recentSearches, favorites, collections, navigate, onClose, toggleTheme, clearHistory, clearSearches]);
+  }, [theme, recentlyViewed, recentSearches, favorites, navigate, onClose, toggleTheme, clearHistory, clearSearches]);
 
   // Filter commands based on query
   const filteredCommands = useMemo(() => {
