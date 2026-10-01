@@ -8,9 +8,10 @@ import ErrorMessage from '@/components/ErrorMessage';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
 import { searchAlbums, getFeaturedAlbums } from '@/services/lastfmApi';
-import { useFavorites } from '@/context/FavoritesContext';
 import { useFilterSort } from '@/hooks/useFilterSort';
 import './PagePlaceholder.css';
+
+import { useSearchParams } from 'react-router-dom';
 
 const PAGE_SIZE = 10;
 const DEBOUNCE_MS = 350;
@@ -22,7 +23,10 @@ const INNER_CLS   = 'mx-auto max-w-5xl';
 const HEADING_CLS = 'font-mono text-lg font-bold uppercase tracking-widest text-gray-900 dark:text-white transition-colors duration-300 sm:text-xl';
 
 function Home() {
-  const [searchQuery, setSearchQuery]   = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlQuery = searchParams.get('search') || '';
+  
+  const [searchQuery, setSearchQuery]   = useState(urlQuery);
   const [page, setPage]                 = useState(0);
   const [searchResults, setSearchResults] = useState([]);
   const [featuredAlbums, setFeaturedAlbums] = useState([]);
@@ -160,9 +164,26 @@ function Home() {
     page * PAGE_SIZE + PAGE_SIZE
   );
 
+  useEffect(() => {
+    setSearchQuery((prev) => {
+      if (prev !== urlQuery) {
+        setPage(0);
+        return urlQuery;
+      }
+      return prev;
+    });
+  }, [urlQuery]);
+
   function handleSetSearchQuery(q) {
     setSearchQuery(q);
     setPage(0);
+    
+    // Sync the URL search parameter
+    if (q) {
+      setSearchParams({ search: q }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
   }
 
   const onClearFilters = () => {

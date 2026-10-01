@@ -6,7 +6,8 @@ function Sidebar({
   onFilterChange,
   onSortChange,
   onClearFilters,
-  hideFilter
+  hideFilter,
+  hideSort
 }) {
   return (
     <aside className="hidden lg:flex flex-col gap-5 w-52 shrink-0 pt-16">
@@ -14,25 +15,26 @@ function Sidebar({
       <div className="flex flex-col gap-3">
         {!hideFilter && (
           <div className="flex flex-col gap-1.5">
-          <label htmlFor="filter-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">
-            Filter
-          </label>
-          <select
-            id="filter-select"
-            value={filterOption || ''}
-            onChange={(e) => onFilterChange?.(e.target.value)}
-            className="bg-[#649495] dark:bg-neutral-900 border-none text-sm text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-neutral-600 transition-colors duration-300 shadow-sm"
-          >
-            <option value="All Albums">All Albums</option>
-            <option value="Favorites">Favorites</option>
-            <option value="Has Album Cover">Has Album Cover</option>
-            <option value="Has Last.fm Link">Has Last.fm Link</option>
-          </select>
-        </div>
+            <label htmlFor="filter-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">
+              Filter
+            </label>
+            <select
+              id="filter-select"
+              value={filterOption || ''}
+              onChange={(e) => onFilterChange?.(e.target.value)}
+              className="bg-[#649495] dark:bg-neutral-900 border-none text-sm text-white rounded-lg p-2 outline-none focus:ring-2 focus:ring-teal-500 dark:focus:ring-neutral-600 transition-colors duration-300 shadow-sm"
+            >
+              <option value="All Albums">All Albums</option>
+              <option value="Favorites">Favorites</option>
+              <option value="Has Album Cover">Has Album Cover</option>
+              <option value="Has Last.fm Link">Has Last.fm Link</option>
+            </select>
+          </div>
         )}
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="sort-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">
+        {!hideSort && (
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="sort-select" className="text-xs font-bold text-gray-500 dark:text-neutral-400 uppercase tracking-wider transition-colors duration-300">
             Sort
           </label>
           <select
@@ -48,14 +50,17 @@ function Sidebar({
             <option value="Newest Release">Newest Release</option>
             <option value="Oldest Release">Oldest Release</option>
           </select>
-        </div>
+          </div>
+        )}
 
-        <button
-          onClick={onClearFilters}
-          className="text-xs text-gray-500 hover:text-gray-900 dark:text-neutral-500 dark:hover:text-white text-left transition-colors duration-300 underline decoration-transparent hover:decoration-gray-900 dark:hover:decoration-white underline-offset-2 mt-1"
-        >
-          Clear Filters
-        </button>
+        {(!hideFilter || !hideSort) && (
+          <button
+            onClick={onClearFilters}
+            className="text-xs text-gray-500 hover:text-gray-900 dark:text-neutral-500 dark:hover:text-white text-left transition-colors duration-300 underline decoration-transparent hover:decoration-gray-900 dark:hover:decoration-white underline-offset-2 mt-1"
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       {/* Dynamic Widget */}

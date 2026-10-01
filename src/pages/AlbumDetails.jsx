@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaPlay, FaPlus, FaChevronLeft } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaPlus, FaChevronLeft } from 'react-icons/fa';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
@@ -18,15 +18,9 @@ import './PagePlaceholder.css';
 function TrackRow({ track }) {
   return (
     <li className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800/60 transition-colors duration-300 group">
-      <span className="w-5 text-right text-xs text-gray-500 dark:text-neutral-500 shrink-0 group-hover:hidden transition-colors duration-300">
+      <span className="w-5 text-right text-xs text-gray-500 dark:text-neutral-500 shrink-0 transition-colors duration-300">
         {track.trackNumber}
       </span>
-      <button
-        aria-label={`Play ${track.title}`}
-        className="hidden group-hover:flex w-5 items-center justify-center text-gray-900 dark:text-white shrink-0 transition-colors duration-300"
-      >
-        <FaPlay className="h-2.5 w-2.5" />
-      </button>
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate transition-colors duration-300">{track.title}</p>

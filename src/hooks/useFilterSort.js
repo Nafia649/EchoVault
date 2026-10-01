@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useFavorites } from '@/context/FavoritesContext';
 
-export function useFilterSort(initialItems = [], itemType = 'album') {
+export function useFilterSort() {
   const { isFavorite } = useFavorites();
   const [filterOption, setFilterOption] = useState('All Albums');
   const [sortOption, setSortOption] = useState('Alphabetical (A–Z)');

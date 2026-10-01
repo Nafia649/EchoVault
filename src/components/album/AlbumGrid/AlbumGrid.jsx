@@ -77,20 +77,6 @@ export const AlbumCard = memo(function AlbumCard({ album, onPlay }) {
             <p className="truncate text-base font-bold text-white leading-tight">{album.title}</p>
             <p className="truncate text-sm text-white/70">{album.artist}</p>
           </div>
-
-          <button
-            type="button"
-            aria-label={`Play ${album.title} by ${album.artist}`}
-            onClick={(e) => { e.stopPropagation(); onPlay?.(album); }}
-            className="shrink-0 flex h-11 w-11 items-center justify-center rounded-full
-                       bg-emerald-500 text-black shadow-lg
-                       opacity-0 translate-y-3
-                       transition-all duration-300 ease-out
-                       group-hover:opacity-100 group-hover:translate-y-0
-                       hover:scale-110 hover:bg-emerald-400"
-          >
-            <FaPlay className="h-4 w-4 ml-0.5" aria-hidden="true" />
-          </button>
         </div>
       </div>
 

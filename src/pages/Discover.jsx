@@ -184,6 +184,8 @@ export default function Discover() {
 
         <div className="hidden lg:block">
           <Sidebar 
+            hideFilter
+            hideSort
             filterOption={filterOption}
             sortOption={sortOption}
             onFilterChange={setFilterOption}

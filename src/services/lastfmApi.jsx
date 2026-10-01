@@ -160,6 +160,16 @@ export function mapLastFmAlbum(item) {
   if (!artistName || !albumTitle) return null;
 
   const id = encodeAlbumId(artistName, albumTitle);
+  
+  let year = null;
+  if (item.year) year = parseInt(item.year, 10);
+  else if (item.releaseDate || item.releasedate) {
+    const raw = item.releaseDate || item.releasedate;
+    const match = raw.match(/\d{4}/);
+    if (match) year = parseInt(match[0], 10);
+  } else if (item.wiki) {
+    year = parseReleaseYear(item.wiki);
+  }
 
   return {
     id,
@@ -167,7 +177,7 @@ export function mapLastFmAlbum(item) {
     artist: artistName,
     image: getBestImage(item.image),
     color: getDeterministicGradient(id),
-    year: null,
+    year: year || null,
     songs: 0,
     duration: 'N/A',
     tracks: [],

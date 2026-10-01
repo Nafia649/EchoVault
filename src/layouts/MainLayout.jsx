@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-
+import { Outlet } from "react-router-dom";
 import Navbar from "../components/layout/Navbar/Navbar";
 import MobileBottomNav from "../components/layout/MobileBottomNav";
 import CommandPalette from "../components/CommandPalette";
