@@ -147,6 +147,7 @@ export function mapLastFmTrack(track, index, fallbackArtist = 'Unknown Artist') 
     title: track.name || 'Untitled Track',
     artist: track.artist?.name || fallbackArtist,
     duration: formatSecondsToDuration(Number(track.duration) || 0),
+    link: track.url || null,
   };
 }
 

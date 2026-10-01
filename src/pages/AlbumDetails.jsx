@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaPlus, FaChevronLeft } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaPlus, FaChevronLeft, FaExternalLinkAlt } from 'react-icons/fa';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Footer from '@/components/Footer';
@@ -16,18 +16,42 @@ import './PagePlaceholder.css';
 /* ─── Track Row ─────────────────────────────────────────────────────────── */
 
 function TrackRow({ track }) {
-  return (
-    <li className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800/60 transition-colors duration-300 group">
+  const content = (
+    <>
       <span className="w-5 text-right text-xs text-gray-500 dark:text-neutral-500 shrink-0 transition-colors duration-300">
         {track.trackNumber}
       </span>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate transition-colors duration-300">{track.title}</p>
-        <p className="text-xs text-gray-500 dark:text-neutral-500 truncate transition-colors duration-300">{track.artist}</p>
+      <div className="flex-1 min-w-0 flex items-center gap-2">
+        <div className="min-w-0">
+          <p className={`text-sm font-semibold text-gray-900 dark:text-white truncate transition-colors duration-300 ${track.link ? 'group-hover:underline decoration-gray-900 dark:decoration-white underline-offset-2' : ''}`}>
+            {track.title}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-neutral-500 truncate transition-colors duration-300">{track.artist}</p>
+        </div>
       </div>
 
+      {track.link && (
+        <FaExternalLinkAlt className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shrink-0" />
+      )}
+
       <span className="text-xs text-gray-400 dark:text-neutral-400 shrink-0 w-9 text-right transition-colors duration-300">{track.duration}</span>
+    </>
+  );
+
+  const wrapperClass = `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-300 group ${track.link ? 'hover:bg-gray-100 dark:hover:bg-neutral-800/60 cursor-pointer' : ''}`;
+
+  return (
+    <li>
+      {track.link ? (
+        <a href={track.link} target="_blank" rel="noopener noreferrer" className={wrapperClass}>
+          {content}
+        </a>
+      ) : (
+        <div className={wrapperClass}>
+          {content}
+        </div>
+      )}
     </li>
   );
 }
